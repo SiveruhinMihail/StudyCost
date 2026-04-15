@@ -1,0 +1,17 @@
+export const visaCosts = [
+  { countryId: "malta", priceEUR: 80 },
+  { countryId: "south-africa", priceUSD: 150 },
+  { countryId: "philippines", priceUSD: 50 },
+  { countryId: "uae", priceAED: 500 },
+  { countryId: "ireland", priceEUR: 300 },
+  { countryId: "usa", priceUSD: 535 },
+  { countryId: "canada", priceCAD: 150 },
+  { countryId: "uk", priceGBP: 490 },
+  { countryId: "germany", priceEUR: 75 },
+  { countryId: "france", priceEUR: 99 },
+  { countryId: "spain", priceEUR: 80 },
+  { countryId: "italy", priceEUR: 50 },
+  { countryId: "netherlands", priceEUR: 80 },
+  { countryId: "australia", priceAUD: 650 },
+  { countryId: "new-zealand", priceNZD: 330 },
+];

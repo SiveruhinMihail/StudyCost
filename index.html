@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StudyCost — подбор страны для изучения английского</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌍%3C/text%3E%3C/svg%3E"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .page-transition-enter {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      .page-transition-enter-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition:
+          opacity 0.25s ease,
+          transform 0.25s ease;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
+    <!-- Навигация -->
+    <header
+      class="bg-white/90 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-20"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center space-x-4">
+            <button
+              onclick="window.appGoBack()"
+              class="text-gray-600 hover:text-blue-800 p-2 rounded-full hover:bg-gray-100 transition"
+              aria-label="Назад"
+              title="Назад"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </button>
+            <div
+              class="flex items-center space-x-2 cursor-pointer"
+              data-link="/"
+            >
+              <span class="text-2xl">🌍</span>
+              <span class="text-xl font-semibold tracking-tight text-blue-800"
+                >StudyCost</span
+              >
+            </div>
+          </div>
+
+          <div class="flex-1 max-w-md mx-4 hidden md:block">
+            <div class="relative">
+              <input
+                type="text"
+                id="global-search-input"
+                placeholder="Поиск по странам, городам и школам..."
+                class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-800 focus:border-transparent"
+              />
+              <svg
+                class="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <nav class="flex items-center space-x-6 text-sm font-medium">
+            <a
+              href="/about"
+              class="nav-link text-gray-600 hover:text-blue-800 transition-colors"
+              data-link="/about"
+              >О проекте</a
+            >
+            <a
+              href="/"
+              class="nav-link text-gray-600 hover:text-blue-800 transition-colors"
+              data-link="/"
+              >Главная</a
+            >
+            <a
+              href="/wizard"
+              class="nav-link text-gray-600 hover:text-blue-800 transition-colors"
+              data-link="/wizard"
+              >Подбор</a
+            >
+            <a
+              href="/saved"
+              class="nav-link text-gray-600 hover:text-blue-800 transition-colors"
+              data-link="/saved"
+              >Мои подборки</a
+            >
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div id="app-root" class="page-transition-enter-active"></div>
+    </main>
+
+    <!-- Расширенный футер -->
+    <footer class="bg-gray-900 text-gray-300 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <h4 class="text-white font-semibold mb-3">StudyCost</h4>
+            <p class="text-sm">
+              Помогаем выбрать идеальное место для изучения английского с учётом
+              бюджета.
+            </p>
+          </div>
+          <div>
+            <h4 class="text-white font-semibold mb-3">Навигация</h4>
+            <ul class="space-y-2 text-sm">
+              <li>
+                <a
+                  href="/about"
+                  class="hover:text-white transition-colors"
+                  data-link="/about"
+                  >О проекте</a
+                >
+              </li>
+              <li>
+                <a
+                  href="/"
+                  class="hover:text-white transition-colors"
+                  data-link="/"
+                  >Главная</a
+                >
+              </li>
+              <li>
+                <a
+                  href="/wizard"
+                  class="hover:text-white transition-colors"
+                  data-link="/wizard"
+                  >Подбор</a
+                >
+              </li>
+              <li>
+                <a
+                  href="/saved"
+                  class="hover:text-white transition-colors"
+                  data-link="/saved"
+                  >Мои подборки</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-white font-semibold mb-3">Контакты</h4>
+            <ul class="space-y-2 text-sm">
+              <li>Email: hello@studycost.ru</li>
+              <li>Telegram: @studycost</li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-white font-semibold mb-3">Источники</h4>
+            <p class="text-sm">
+              Данные собраны из открытых источников и обновляются ежемесячно.
+            </p>
+          </div>
+        </div>
+        <div class="border-t border-gray-700 mt-8 pt-6 text-sm text-center">
+          © 2025 StudyCost. Все права защищены.
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
