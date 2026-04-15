@@ -14,20 +14,6 @@
 
 </div>
 
----
-
-## 📸 Скриншоты
-
-| Главная страница                                               | Страница подбора                                           |
-| -------------------------------------------------------------- | ---------------------------------------------------------- |
-| ![Главная](https://via.placeholder.com/400x250?text=Home+Page) | ![Подбор](https://via.placeholder.com/400x250?text=Wizard) |
-
-| Результаты                                                      | Страница школы                                            |
-| --------------------------------------------------------------- | --------------------------------------------------------- |
-| ![Результаты](https://via.placeholder.com/400x250?text=Results) | ![Школа](https://via.placeholder.com/400x250?text=School) |
-
----
-
 ## 🧭 О проекте
 
 **StudyCost** — это интерактивный веб‑сервис, который помогает школьникам, студентам и всем желающим подобрать оптимальную страну для изучения английского языка.  
@@ -106,20 +92,6 @@ study-cost/
 └── README.md
 ```
 
----
-
-## 🤝 Вклад в проект
-
-Мы приветствуем любые улучшения!
-
-1. Форкните репозиторий
-2. Создайте ветку (`git checkout -b feature/amazing-feature`)
-3. Закоммитьте изменения (`git commit -m 'Add some amazing feature'`)
-4. Запушьте ветку (`git push origin feature/amazing-feature`)
-5. Откройте Pull Request
-
----
-
 ## 📄 Лицензия
 
 Распространяется под лицензией MIT. См. [LICENSE](LICENSE) для подробностей.
@@ -128,9 +100,8 @@ study-cost/
 
 ## 📞 Контакты
 
-**Разработчик**: [Your Name](https://github.com/yourusername)  
-**Email**: hello@studycost.ru  
-**Telegram**: [@studycost](https://t.me/studycost)
+**Разработчик**: [Lum1nous](https://github.com/SiveruhinMihail)  
+**Email**: 89450.miha@gmail.com
 
 ---
 
