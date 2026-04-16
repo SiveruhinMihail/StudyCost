@@ -15,6 +15,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/burger.css" />
     <style>
       body {
         font-family: "Inter", sans-serif;
@@ -33,7 +34,6 @@
     </style>
   </head>
   <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
-    <!-- Навигация -->
     <header
       class="bg-white/90 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-20"
     >
@@ -94,7 +94,9 @@
             </div>
           </div>
 
-          <nav class="flex items-center space-x-6 text-sm font-medium">
+          <nav
+            class="hidden md:flex items-center space-x-6 text-sm font-medium"
+          >
             <a
               href="/about"
               class="nav-link text-gray-600 hover:text-blue-800 transition-colors"
@@ -120,16 +122,107 @@
               >Мои подборки</a
             >
           </nav>
+
+          <div class="md:hidden flex items-center">
+            <button
+              id="burger-btn"
+              class="text-gray-600 hover:text-blue-800 p-2 rounded-full hover:bg-gray-100 transition"
+            >
+              <svg
+                id="burger-icon"
+                class="burger-icon h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <line
+                  x1="4"
+                  y1="6"
+                  x2="20"
+                  y2="6"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <line
+                  x1="4"
+                  y1="12"
+                  x2="20"
+                  y2="12"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <line
+                  x1="4"
+                  y1="18"
+                  x2="20"
+                  y2="18"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="mobile-menu"
+        class="md:hidden bg-white border-t border-gray-200 px-4"
+      >
+        <nav class="flex flex-col space-y-3 text-sm font-medium">
+          <a
+            href="/about"
+            class="nav-link text-gray-600 hover:text-blue-800 transition-colors py-2"
+            data-link="/about"
+            >О проекте</a
+          >
+          <a
+            href="/"
+            class="nav-link text-gray-600 hover:text-blue-800 transition-colors py-2"
+            data-link="/"
+            >Главная</a
+          >
+          <a
+            href="/wizard"
+            class="nav-link text-gray-600 hover:text-blue-800 transition-colors py-2"
+            data-link="/wizard"
+            >Подбор</a
+          >
+          <a
+            href="/saved"
+            class="nav-link text-gray-600 hover:text-blue-800 transition-colors py-2"
+            data-link="/saved"
+            >Мои подборки</a
+          >
+        </nav>
+        <div class="mt-4 relative">
+          <input
+            type="text"
+            id="mobile-search-input"
+            placeholder="Поиск..."
+            class="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-blue-800"
+          />
+          <svg
+            class="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
         </div>
       </div>
     </header>
 
-    <!-- Основной контент -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div id="app-root" class="page-transition-enter-active"></div>
     </main>
 
-    <!-- Расширенный футер -->
     <footer class="bg-gray-900 text-gray-300 mt-auto">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -143,14 +236,6 @@
           <div>
             <h4 class="text-white font-semibold mb-3">Навигация</h4>
             <ul class="space-y-2 text-sm">
-              <li>
-                <a
-                  href="/about"
-                  class="hover:text-white transition-colors"
-                  data-link="/about"
-                  >О проекте</a
-                >
-              </li>
               <li>
                 <a
                   href="/"
@@ -175,6 +260,14 @@
                   >Мои подборки</a
                 >
               </li>
+              <li>
+                <a
+                  href="/about"
+                  class="hover:text-white transition-colors"
+                  data-link="/about"
+                  >О проекте</a
+                >
+              </li>
             </ul>
           </div>
           <div>
@@ -196,6 +289,44 @@
         </div>
       </div>
     </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const burgerBtn = document.getElementById("burger-btn");
+        const mobileMenu = document.getElementById("mobile-menu");
+        const burgerIcon = document.getElementById("burger-icon");
+
+        if (burgerBtn && mobileMenu && burgerIcon) {
+          burgerBtn.addEventListener("click", function () {
+            mobileMenu.classList.toggle("show");
+            burgerIcon.classList.toggle("open");
+          });
+
+          document
+            .querySelectorAll("#mobile-menu .nav-link")
+            .forEach((link) => {
+              link.addEventListener("click", function () {
+                mobileMenu.classList.remove("show");
+                burgerIcon.classList.remove("open");
+              });
+            });
+        }
+
+        const globalSearch = document.getElementById("global-search-input");
+        const mobileSearch = document.getElementById("mobile-search-input");
+
+        if (globalSearch && mobileSearch) {
+          mobileSearch.addEventListener("input", function (e) {
+            globalSearch.value = e.target.value;
+            globalSearch.dispatchEvent(new Event("input", { bubbles: true }));
+          });
+
+          globalSearch.addEventListener("input", function (e) {
+            mobileSearch.value = e.target.value;
+          });
+        }
+      });
+    </script>
 
     <script type="module" src="js/app.js"></script>
   </body>

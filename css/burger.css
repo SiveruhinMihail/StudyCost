@@ -1,0 +1,41 @@
+#mobile-menu {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.3s ease,
+    padding 0.3s ease;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+#mobile-menu.show {
+  max-height: 400px;
+  opacity: 1;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.burger-icon {
+  transition: transform 0.3s ease;
+}
+
+.burger-icon line {
+  transition:
+    transform 0.3s ease,
+    opacity 0.2s ease;
+  transform-origin: center;
+}
+
+.burger-icon.open line:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.burger-icon.open line:nth-child(2) {
+  opacity: 0;
+}
+
+.burger-icon.open line:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
