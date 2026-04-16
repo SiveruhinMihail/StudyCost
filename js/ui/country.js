@@ -1,3 +1,4 @@
+// js/ui/country.js
 import { countries } from "../data/countries.js";
 import { courses } from "../data/courses.js";
 import { livingCosts } from "../data/livingCosts.js";
@@ -15,17 +16,19 @@ export function renderCountryPage(countryId) {
 
   const countryCourses = courses.filter((c) => c.countryId === countryId);
   const living = livingCosts.find((l) => l.countryId === countryId);
-  const heroImage = `https://source.unsplash.com/featured/1200x400/?${country.name.toLowerCase()},landscape`;
+  const imageUrl = `https://source.unsplash.com/featured/1200x400/?${country.name.toLowerCase()},${country.capital.toLowerCase()},landmark`;
 
   let html = `
         <div class="max-w-5xl mx-auto">
             <div class="relative h-64 md:h-80 rounded-2xl overflow-hidden mb-8">
-                <img src="${heroImage}" alt="${country.name}" class="w-full h-full object-cover" 
-                     onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1502920514313-52581002a659?w=1200';">
+                <img src="${imageUrl}" alt="${country.name}" class="w-full h-full object-cover"
+                     onerror="this.onerror=null; this.src=''; this.parentElement.classList.add('bg-gradient-to-r', 'from-blue-800', 'to-blue-600');">
                 <div class="absolute inset-0 bg-black/30"></div>
                 <div class="absolute bottom-6 left-6 text-white">
                     <div class="flex items-center">
-                        <span class="text-5xl mr-4">${country.flag}</span>
+                        <div class="bg-white/20 backdrop-blur-sm p-2 rounded-xl mr-4">
+                            <span class="fi fi-${country.code} text-4xl"></span>
+                        </div>
                         <div>
                             <h1 class="text-4xl font-bold">${country.name}</h1>
                             <p class="text-lg opacity-90">${country.capital}</p>
@@ -40,7 +43,7 @@ export function renderCountryPage(countryId) {
                     <dl class="space-y-2 text-sm">
                         <div class="flex"><dt class="w-1/3 text-gray-500">Язык:</dt><dd>${country.language?.join(", ") || "Английский"}</dd></div>
                         <div class="flex"><dt class="w-1/3 text-gray-500">Валюта:</dt><dd>${country.currency}</dd></div>
-                        <div class="flex"><dt class="w-1/3 text-gray-500">Климат:</dt><dd>${country.climate}</dd></div>
+                        <div class="flex"><dt class="w-1/3 text-gray-500">Климат:</dt><dd>${getClimateLabel(country.climate)}</dd></div>
                         <div class="flex"><dt class="w-1/3 text-gray-500">Подработка:</dt><dd>${country.workAllowed ? "Разрешена" : "Нет"}</dd></div>
                     </dl>
                 </div>
@@ -96,6 +99,16 @@ function renderSchoolCard(course, country) {
             </div>
         </div>
     `;
+}
+
+function getClimateLabel(climate) {
+  const labels = {
+    warm: "Тёплый",
+    temper: "Умеренный",
+    cold: "Холодный",
+    varied: "Разнообразный",
+  };
+  return labels[climate] || climate;
 }
 
 function getPriceDisplay(course, country) {

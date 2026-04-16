@@ -1,47 +1,40 @@
-import { AppState } from './core/state.js';
-import { renderHomePage } from './ui/home.js';
-import { renderWizardPage } from './ui/wizard.js';
-import { renderCountryPage } from './ui/country.js';
-import { renderSchoolPage } from './ui/school.js';
-import { renderSavedPage } from './ui/saved.js';
-import { renderAboutPage } from './ui/about.js';
-import { storage } from './core/storage.js';
+// js/app.js
+import { AppState } from "./core/state.js";
+import { renderHomePage } from "./ui/home.js";
+import { renderWizardPage } from "./ui/wizard.js";
+import { renderCountryPage } from "./ui/country.js";
+import { renderSchoolPage } from "./ui/school.js";
+import { renderSavedPage } from "./ui/saved.js";
+import { renderAboutPage } from "./ui/about.js";
+import { storage } from "./core/storage.js";
 
-const root = document.getElementById('app-root');
+const root = document.getElementById("app-root");
 
-const BASE_PATH = (() => {
-  const path = window.location.pathname;
-  const match = path.match(/^(\/[^/]+)/);
-  if (match && !match[1].includes('.')) {
-    return match[1] + '/';
-  }
-  return '/';
-})();
+function getHashPath() {
+  const hash = window.location.hash.slice(1);
+  return hash || "/";
+}
 
 function normalizePath(path) {
-  if (BASE_PATH !== '/' && path.startsWith(BASE_PATH)) {
-    return path.slice(BASE_PATH.length - 1) || '/';
-  }
   return path;
 }
 
 function fullPath(route) {
-  if (BASE_PATH === '/') return route;
-  return BASE_PATH.slice(0, -1) + route;
+  return "#" + route;
 }
 
-let currentPath = window.location.pathname;
+let currentPath = getHashPath();
 
-window.appGoBack = function() {
+window.appGoBack = function () {
   if (window.history.length > 1) {
     window.history.back();
   } else {
-    navigateTo('/');
+    navigateTo("/");
   }
 };
 
-document.addEventListener('click', (e) => {
-  const link = e.target.closest('[data-link]');
+document.addEventListener("click", (e) => {
+  const link = e.target.closest("[data-link]");
   if (link) {
     e.preventDefault();
     const path = link.dataset.link;
@@ -49,33 +42,31 @@ document.addEventListener('click', (e) => {
   }
 });
 
-window.addEventListener('popstate', () => {
+window.addEventListener("hashchange", () => {
   handleLocation();
 });
 
 export function navigateTo(path) {
   const normalized = normalizePath(path);
   const targetFullPath = fullPath(normalized);
-  if (targetFullPath === currentPath) return;
-  window.history.pushState({}, '', targetFullPath);
-  handleLocation();
+  if (targetFullPath === "#" + currentPath) return;
+  window.location.hash = normalized;
 }
 
 function handleLocation() {
-  currentPath = window.location.pathname;
-  const normalizedPath = normalizePath(currentPath);
-  renderPage(normalizedPath);
+  currentPath = getHashPath();
+  renderPage(currentPath);
   updateActiveNav();
 }
 
 function renderPage(path) {
-  root.classList.add('page-transition-enter');
-  root.classList.remove('page-transition-enter-active');
-  
+  root.classList.add("page-transition-enter");
+  root.classList.remove("page-transition-enter-active");
+
   setTimeout(() => {
-    if (path === '/' || path === '') {
+    if (path === "/" || path === "") {
       renderHomePage();
-    } else if (path === '/wizard') {
+    } else if (path === "/wizard") {
       if (AppState.currentStep === 4 && AppState.results.all.length > 0) {
         renderWizardPage();
       } else {
@@ -94,54 +85,51 @@ function renderPage(path) {
           renderWizardPage();
         }
       }
-    } else if (path.startsWith('/country/')) {
-      const countryId = path.split('/')[2];
+    } else if (path.startsWith("/country/")) {
+      const countryId = path.split("/")[2];
       renderCountryPage(countryId);
-    } else if (path.startsWith('/school/')) {
-      const schoolId = path.split('/')[2];
+    } else if (path.startsWith("/school/")) {
+      const schoolId = path.split("/")[2];
       renderSchoolPage(schoolId);
-    } else if (path === '/saved') {
+    } else if (path === "/saved") {
       renderSavedPage();
-    } else if (path === '/about') {
+    } else if (path === "/about") {
       renderAboutPage();
     } else {
       root.innerHTML = `<div class="text-center py-20">Страница не найдена</div>`;
     }
-    
-    root.classList.add('page-transition-enter-active');
+
+    root.classList.add("page-transition-enter-active");
   }, 50);
 }
 
 function updateActiveNav() {
-  const normalizedCurrent = normalizePath(currentPath);
-  document.querySelectorAll('.nav-link').forEach(link => {
-    link.classList.remove('text-blue-800', 'font-semibold');
-    if (link.dataset.link === normalizedCurrent) {
-      link.classList.add('text-blue-800', 'font-semibold');
+  document.querySelectorAll(".nav-link").forEach((link) => {
+    link.classList.remove("text-blue-800", "font-semibold");
+    if (link.dataset.link === currentPath) {
+      link.classList.add("text-blue-800", "font-semibold");
     }
   });
 }
 
-document.addEventListener('input', (e) => {
-  if (e.target.id === 'global-search-input') {
+document.addEventListener("input", (e) => {
+  if (e.target.id === "global-search-input") {
     const query = e.target.value.toLowerCase();
-    window.dispatchEvent(new CustomEvent('global-search', { detail: query }));
+    window.dispatchEvent(new CustomEvent("global-search", { detail: query }));
   }
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
   AppState.init();
-  
-  const isFirstVisit = !localStorage.getItem('studyCost_visited');
-  const normalizedCurrent = normalizePath(window.location.pathname);
-  
-  if (isFirstVisit && (normalizedCurrent === '/' || normalizedCurrent === '')) {
-    localStorage.setItem('studyCost_visited', 'true');
-    const aboutFullPath = fullPath('/about');
-    window.history.replaceState({}, '', aboutFullPath);
-    handleLocation();
+
+  const isFirstVisit = !localStorage.getItem("studyCost_visited");
+  const currentHash = getHashPath();
+
+  if (isFirstVisit && (currentHash === "/" || currentHash === "")) {
+    localStorage.setItem("studyCost_visited", "true");
+    navigateTo("/about");
     return;
   }
-  
+
   handleLocation();
 });

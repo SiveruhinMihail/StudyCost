@@ -14,6 +14,10 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flag-icons@6.11.1/css/flag-icons.min.css"
+    />
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="css/burger.css" />
     <style>
@@ -30,6 +34,11 @@
         transition:
           opacity 0.25s ease,
           transform 0.25s ease;
+      }
+      .fi {
+        border-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        background-size: cover;
       }
     </style>
   </head>
@@ -98,25 +107,25 @@
             class="hidden md:flex items-center space-x-6 text-sm font-medium"
           >
             <a
-              href="/about"
+              href="#/about"
               class="nav-link text-gray-600 hover:text-blue-800 transition-colors"
               data-link="/about"
               >О проекте</a
             >
             <a
-              href="/"
+              href="#/"
               class="nav-link text-gray-600 hover:text-blue-800 transition-colors"
               data-link="/"
               >Главная</a
             >
             <a
-              href="/wizard"
+              href="#/wizard"
               class="nav-link text-gray-600 hover:text-blue-800 transition-colors"
               data-link="/wizard"
               >Подбор</a
             >
             <a
-              href="/saved"
+              href="#/saved"
               class="nav-link text-gray-600 hover:text-blue-800 transition-colors"
               data-link="/saved"
               >Мои подборки</a
@@ -171,25 +180,25 @@
       >
         <nav class="flex flex-col space-y-3 text-sm font-medium">
           <a
-            href="/about"
+            href="#/about"
             class="nav-link text-gray-600 hover:text-blue-800 transition-colors py-2"
             data-link="/about"
             >О проекте</a
           >
           <a
-            href="/"
+            href="#/"
             class="nav-link text-gray-600 hover:text-blue-800 transition-colors py-2"
             data-link="/"
             >Главная</a
           >
           <a
-            href="/wizard"
+            href="#/wizard"
             class="nav-link text-gray-600 hover:text-blue-800 transition-colors py-2"
             data-link="/wizard"
             >Подбор</a
           >
           <a
-            href="/saved"
+            href="#/saved"
             class="nav-link text-gray-600 hover:text-blue-800 transition-colors py-2"
             data-link="/saved"
             >Мои подборки</a
@@ -238,7 +247,7 @@
             <ul class="space-y-2 text-sm">
               <li>
                 <a
-                  href="/"
+                  href="#/"
                   class="hover:text-white transition-colors"
                   data-link="/"
                   >Главная</a
@@ -246,7 +255,7 @@
               </li>
               <li>
                 <a
-                  href="/wizard"
+                  href="#/wizard"
                   class="hover:text-white transition-colors"
                   data-link="/wizard"
                   >Подбор</a
@@ -254,7 +263,7 @@
               </li>
               <li>
                 <a
-                  href="/saved"
+                  href="#/saved"
                   class="hover:text-white transition-colors"
                   data-link="/saved"
                   >Мои подборки</a
@@ -262,7 +271,7 @@
               </li>
               <li>
                 <a
-                  href="/about"
+                  href="#/about"
                   class="hover:text-white transition-colors"
                   data-link="/about"
                   >О проекте</a

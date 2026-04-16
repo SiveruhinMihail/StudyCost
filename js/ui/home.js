@@ -1,3 +1,4 @@
+// js/ui/home.js
 import { countries } from "../data/countries.js";
 import { courses } from "../data/courses.js";
 import { livingCosts } from "../data/livingCosts.js";
@@ -35,6 +36,8 @@ export function renderHomePage() {
 }
 
 function renderCountryCard(country) {
+  const imageUrl = `https://source.unsplash.com/featured/400x300/?${country.name.toLowerCase()},city,landmark`;
+
   const countryCourses = courses.filter((c) => c.countryId === country.id);
   const living = livingCosts.find((l) => l.countryId === country.id);
 
@@ -57,15 +60,15 @@ function renderCountryCard(country) {
     : "Цена по запросу";
   const searchData = `${country.name.toLowerCase()} ${country.capital.toLowerCase()} ${country.id}`;
 
-  const imageUrl = `https://source.unsplash.com/featured/400x300/?${country.name.toLowerCase()},city,landmark`;
-
   return `
         <div class="country-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover cursor-pointer" 
              data-country-id="${country.id}" data-searchable="${searchData}">
-            <div class="h-36 bg-gradient-to-br from-blue-100 to-blue-50 relative">
+            <div class="h-36 relative">
                 <img src="${imageUrl}" alt="${country.name}" class="w-full h-full object-cover" 
-                     onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'text-5xl absolute inset-0 flex items-center justify-center\'>${country.flag}</span>';">
-                <span class="absolute top-3 left-3 text-3xl drop-shadow">${country.flag}</span>
+                     onerror="this.onerror=null; this.parentElement.classList.add('bg-gradient-to-br', 'from-blue-100', 'to-blue-50'); this.style.display='none';">
+                <div class="absolute top-3 left-3 bg-white/80 backdrop-blur-sm p-1.5 rounded-lg shadow-sm">
+                    <span class="fi fi-${country.code} text-2xl"></span>
+                </div>
             </div>
             <div class="p-5">
                 <h3 class="font-semibold text-xl mb-1">${country.name}</h3>

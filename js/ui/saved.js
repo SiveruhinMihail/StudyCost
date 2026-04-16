@@ -1,6 +1,8 @@
+// js/ui/saved.js
 import { AppState } from "../core/state.js";
 import { formatCurrency } from "./helpers.js";
 import { navigateTo } from "../app.js";
+import { countries } from "../data/countries.js";
 
 const root = document.getElementById("app-root");
 
@@ -12,7 +14,7 @@ export function renderSavedPage() {
             <div class="max-w-3xl mx-auto text-center py-12">
                 <h2 class="text-2xl font-bold mb-4">📭 Нет сохранённых подборок</h2>
                 <p class="text-gray-600 mb-6">Вы ещё не сохранили ни одного результата. Перейдите в раздел «Подбор» и завершите визард — подборка сохранится автоматически.</p>
-                <a href="/wizard" data-link="/wizard" class="inline-block bg-blue-800 text-white px-6 py-3 rounded-xl hover:bg-blue-900 transition">Перейти к подбору</a>
+                <a href="#/wizard" data-link="/wizard" class="inline-block bg-blue-800 text-white px-6 py-3 rounded-xl hover:bg-blue-900 transition">Перейти к подбору</a>
             </div>
         `;
     return;
@@ -81,21 +83,23 @@ function renderSavedSearch(search) {
             
             <h3 class="font-medium mb-3">Лучшие варианты:</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                ${topResults
-                  .map(
-                    (school) => `
-                    <div class="border rounded-xl p-3">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-xl">${school.flag}</span>
-                            <span class="font-medium truncate">${school.schoolName}</span>
-                        </div>
-                        <div class="text-sm text-gray-600">${school.countryName}, ${school.city}</div>
-                        <div class="text-sm font-medium mt-2">${formatCurrency(school.totalCost)}</div>
-                    </div>
-                `,
-                  )
-                  .join("")}
+                ${topResults.map((school) => renderMiniSchoolCard(school)).join("")}
             </div>
+        </div>
+    `;
+}
+
+function renderMiniSchoolCard(school) {
+  const country = countries.find((c) => c.id === school.countryId);
+
+  return `
+        <div class="border rounded-xl p-3">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="fi fi-${country?.code || "unknown"}"></span>
+                <span class="font-medium truncate">${school.schoolName}</span>
+            </div>
+            <div class="text-sm text-gray-600">${school.countryName}, ${school.city}</div>
+            <div class="text-sm font-medium mt-2">${formatCurrency(school.totalCost)}</div>
         </div>
     `;
 }

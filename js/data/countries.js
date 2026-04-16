@@ -1,6 +1,8 @@
+// js/data/countries.js
 export const countries = [
   {
     id: "malta",
+    code: "mt",
     name: "Мальта",
     flag: "🇲🇹",
     capital: "Валлетта",
@@ -13,6 +15,7 @@ export const countries = [
   },
   {
     id: "south-africa",
+    code: "za",
     name: "ЮАР",
     flag: "🇿🇦",
     capital: "Кейптаун",
@@ -25,6 +28,7 @@ export const countries = [
   },
   {
     id: "philippines",
+    code: "ph",
     name: "Филиппины",
     flag: "🇵🇭",
     capital: "Манила",
@@ -37,6 +41,7 @@ export const countries = [
   },
   {
     id: "uae",
+    code: "ae",
     name: "ОАЭ",
     flag: "🇦🇪",
     capital: "Абу-Даби",
@@ -49,6 +54,7 @@ export const countries = [
   },
   {
     id: "ireland",
+    code: "ie",
     name: "Ирландия",
     flag: "🇮🇪",
     capital: "Дублин",
@@ -61,6 +67,7 @@ export const countries = [
   },
   {
     id: "usa",
+    code: "us",
     name: "США",
     flag: "🇺🇸",
     capital: "Вашингтон",
@@ -73,6 +80,7 @@ export const countries = [
   },
   {
     id: "canada",
+    code: "ca",
     name: "Канада",
     flag: "🇨🇦",
     capital: "Оттава",
@@ -85,6 +93,7 @@ export const countries = [
   },
   {
     id: "uk",
+    code: "gb",
     name: "Великобритания",
     flag: "🇬🇧",
     capital: "Лондон",
@@ -97,6 +106,7 @@ export const countries = [
   },
   {
     id: "germany",
+    code: "de",
     name: "Германия",
     flag: "🇩🇪",
     capital: "Берлин",
@@ -109,6 +119,7 @@ export const countries = [
   },
   {
     id: "france",
+    code: "fr",
     name: "Франция",
     flag: "🇫🇷",
     capital: "Париж",
@@ -121,6 +132,7 @@ export const countries = [
   },
   {
     id: "spain",
+    code: "es",
     name: "Испания",
     flag: "🇪🇸",
     capital: "Мадрид",
@@ -133,6 +145,7 @@ export const countries = [
   },
   {
     id: "italy",
+    code: "it",
     name: "Италия",
     flag: "🇮🇹",
     capital: "Рим",
@@ -145,6 +158,7 @@ export const countries = [
   },
   {
     id: "netherlands",
+    code: "nl",
     name: "Нидерланды",
     flag: "🇳🇱",
     capital: "Амстердам",
@@ -157,6 +171,7 @@ export const countries = [
   },
   {
     id: "australia",
+    code: "au",
     name: "Австралия",
     flag: "🇦🇺",
     capital: "Канберра",
@@ -169,6 +184,7 @@ export const countries = [
   },
   {
     id: "new-zealand",
+    code: "nz",
     name: "Новая Зеландия",
     flag: "🇳🇿",
     capital: "Веллингтон",

@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Перенаправление...</title>
+    <script>
+      (function () {
+        var path = window.location.pathname;
+        var base = path.substring(0, path.lastIndexOf("/") + 1);
+        var redirect = base + "?p=" + encodeURIComponent(path);
+        window.location.replace(redirect);
+      })();
+    </script>
+  </head>
+  <body>
+    <p>Перенаправление на главную страницу...</p>
+  </body>
+</html>

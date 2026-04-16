@@ -1,8 +1,10 @@
+// js/ui/wizard.js (полный)
 import { AppState } from "../core/state.js";
 import { calculateCandidates, rankCandidates } from "../core/calculator.js";
 import { formatCurrency, formatNumberInput } from "./helpers.js";
 import { navigateTo } from "../app.js";
 import { storage } from "../core/storage.js";
+import { countries } from "../data/countries.js";
 
 const root = document.getElementById("app-root");
 
@@ -260,7 +262,7 @@ function renderWizardResults() {
     `;
   root.innerHTML = html;
   attachResultsListeners();
-  attachCardButtons(); 
+  attachCardButtons();
 }
 
 function renderResultCards(candidates) {
@@ -272,19 +274,21 @@ function renderResultCards(candidates) {
       const diff = c.budgetDiff;
       const diffClass = diff >= 0 ? "text-green-600" : "text-red-500";
       const schoolImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(c.schoolName)}&background=1E3A8A&color=fff&size=48`;
+      const country = countries.find((ct) => ct.id === c.countryId);
+
       return `
             <div class="result-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover" data-searchable="${c.countryName.toLowerCase()} ${c.city.toLowerCase()} ${c.schoolName.toLowerCase()}">
                 <div class="p-5">
-                    <!-- Страна (крупно) -->
                     <div class="flex items-center gap-3 mb-3">
-                        <span class="text-4xl">${c.flag}</span>
+                        <div class="bg-gray-100 p-1.5 rounded-lg">
+                            <span class="fi fi-${country?.code || "unknown"} text-2xl"></span>
+                        </div>
                         <div>
                             <h3 class="font-bold text-xl">${c.countryName}</h3>
                             <p class="text-gray-500 text-sm">${c.city}</p>
                         </div>
                     </div>
                     
-                    <!-- Школа (выделенный блок) -->
                     <div class="flex items-center gap-3 mb-4 p-3 bg-blue-50/50 rounded-xl">
                         <img src="${schoolImage}" alt="${c.schoolName}" class="w-10 h-10 rounded-full">
                         <div>
@@ -296,7 +300,6 @@ function renderResultCards(candidates) {
                         </div>
                     </div>
                     
-                    <!-- Стоимость -->
                     <div class="space-y-2 text-sm mb-4">
                         <div class="flex justify-between"><span class="text-gray-500">Курс:</span><span>${formatCurrency(c.courseCost)}</span></div>
                         <div class="flex justify-between"><span class="text-gray-500">Проживание:</span><span>${formatCurrency(c.livingCost)}</span></div>
@@ -375,7 +378,7 @@ function attachResultsListeners() {
       });
       btn.classList.add("border-b-2", "border-blue-800", "text-blue-800");
 
-      attachCardButtons(); 
+      attachCardButtons();
     });
   });
 
