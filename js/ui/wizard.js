@@ -1,15 +1,16 @@
-// js/ui/wizard.js (полный)
+// js/ui/wizard.js
 import { AppState } from "../core/state.js";
 import { calculateCandidates, rankCandidates } from "../core/calculator.js";
 import { formatCurrency, formatNumberInput } from "./helpers.js";
 import { navigateTo } from "../app.js";
 import { storage } from "../core/storage.js";
 import { countries } from "../data/countries.js";
+import { livingCosts } from "../data/livingCosts.js";
 
 const root = document.getElementById("app-root");
 
 export function renderWizardPage() {
-  if (AppState.currentStep === 4) {
+  if (AppState.currentStep === 5) {
     renderWizardResults();
     return;
   }
@@ -24,7 +25,7 @@ function renderWizardStep() {
                 ${renderProgressBar()}
             </div>
             <div id="wizard-step-content" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
-                ${step === 1 ? renderBudgetStep() : step === 2 ? renderDurationStep() : renderPreferencesStep()}
+                ${step === 1 ? renderBudgetStep() : step === 2 ? renderDurationStep() : step === 3 ? renderLivingStep() : renderPreferencesStep()}
             </div>
         </div>
     `;
@@ -33,7 +34,7 @@ function renderWizardStep() {
 }
 
 function renderProgressBar() {
-  const steps = ["Бюджет", "Срок", "Предпочтения", "Результат"];
+  const steps = ["Бюджет", "Срок", "Проживание", "Предпочтения", "Результат"];
   return `
         <div class="flex justify-between">
             ${steps
@@ -42,7 +43,7 @@ function renderProgressBar() {
                 const isActive = AppState.currentStep === stepNum;
                 const isCompleted = AppState.currentStep > stepNum;
                 return `
-                    <div class="flex flex-col items-center w-1/4 wizard-progress-step ${isActive ? "active" : ""} ${isCompleted ? "completed" : ""}">
+                    <div class="flex flex-col items-center w-1/5 wizard-progress-step ${isActive ? "active" : ""} ${isCompleted ? "completed" : ""}">
                         <div class="step-circle w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium border-2 ${isActive ? "border-blue-800 bg-blue-800 text-white" : isCompleted ? "border-green-500 bg-green-500 text-white" : "border-gray-300 bg-white text-gray-500"}">
                             ${stepNum}
                         </div>
@@ -57,7 +58,11 @@ function renderProgressBar() {
 
 function renderBudgetStep() {
   const budget = AppState.filters.totalBudget || "";
-  const budgetType = AppState.filters.budgetType;
+  const selectedItems = AppState.filters.selectedItems || [
+    "course",
+    "accommodation",
+    "food",
+  ];
   return `
         <h2 class="text-2xl font-bold mb-6 text-gray-900">💰 Ваш бюджет</h2>
         <div class="space-y-6">
@@ -74,18 +79,30 @@ function renderBudgetStep() {
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-3">Что включить в расчёт?</label>
-                <div class="space-y-3">
+                <div class="space-y-2">
                     <label class="flex items-center cursor-pointer">
-                        <input type="radio" name="budgetType" value="course" ${budgetType === "course" ? "checked" : ""} class="wizard-radio">
-                        <span class="ml-2">Только стоимость курса</span>
+                        <input type="checkbox" name="budgetItem" value="course" ${selectedItems.includes("course") ? "checked" : ""} class="wizard-checkbox">
+                        <span class="ml-2">Курс английского</span>
                     </label>
                     <label class="flex items-center cursor-pointer">
-                        <input type="radio" name="budgetType" value="course+living" ${budgetType === "course+living" ? "checked" : ""} class="wizard-radio">
-                        <span class="ml-2">Курс + проживание</span>
+                        <input type="checkbox" name="budgetItem" value="accommodation" ${selectedItems.includes("accommodation") ? "checked" : ""} class="wizard-checkbox">
+                        <span class="ml-2">Проживание</span>
                     </label>
                     <label class="flex items-center cursor-pointer">
-                        <input type="radio" name="budgetType" value="all" ${budgetType === "all" ? "checked" : ""} class="wizard-radio">
-                        <span class="ml-2">Всё включено (перелёт, виза, питание)</span>
+                        <input type="checkbox" name="budgetItem" value="food" ${selectedItems.includes("food") ? "checked" : ""} class="wizard-checkbox">
+                        <span class="ml-2">Питание</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" name="budgetItem" value="transport" ${selectedItems.includes("transport") ? "checked" : ""} class="wizard-checkbox">
+                        <span class="ml-2">Транспорт</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" name="budgetItem" value="visa" ${selectedItems.includes("visa") ? "checked" : ""} class="wizard-checkbox">
+                        <span class="ml-2">Виза</span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" name="budgetItem" value="flight" ${selectedItems.includes("flight") ? "checked" : ""} class="wizard-checkbox">
+                        <span class="ml-2">Авиаперелёт (оценка 50 000 ₽)</span>
                     </label>
                 </div>
             </div>
@@ -122,6 +139,65 @@ function renderDurationStep() {
     `;
 }
 
+function renderLivingStep() {
+  const accommodationType = AppState.filters.accommodationType || "shared";
+  const foodType = AppState.filters.foodType || "cooking";
+
+  // Находим примерные данные для Мальты (или первой страны) чтобы показать разницу
+  const sampleLiving = livingCosts[0];
+  const country = countries[0];
+  let sharedRoomPrice = 0,
+    privateRoomPrice = 0,
+    cookingPrice = 0,
+    eatingOutPrice = 0;
+  if (sampleLiving) {
+    sharedRoomPrice =
+      sampleLiving.accommodation.sharedRoom * country.exchangeRate;
+    privateRoomPrice =
+      sampleLiving.accommodation.privateRoom * country.exchangeRate;
+    cookingPrice = sampleLiving.food.cooking * country.exchangeRate;
+    eatingOutPrice = sampleLiving.food.eatingOut * country.exchangeRate;
+  }
+
+  return `
+        <h2 class="text-2xl font-bold mb-6 text-gray-900">🏠 Проживание и питание</h2>
+        <div class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-3">Тип проживания</label>
+                <div class="space-y-3">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" name="accommodationType" value="shared" ${accommodationType === "shared" ? "checked" : ""} class="wizard-radio">
+                        <span class="ml-2">Общая комната (общежитие) <span class="text-green-600 text-xs font-medium ml-2">дешевле</span></span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" name="accommodationType" value="private" ${accommodationType === "private" ? "checked" : ""} class="wizard-radio">
+                        <span class="ml-2">Отдельная комната <span class="text-red-500 text-xs font-medium ml-2">дороже</span></span>
+                    </label>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Пример (Мальта): общая ≈ ${formatCurrency(sharedRoomPrice)}/мес, отдельная ≈ ${formatCurrency(privateRoomPrice)}/мес</p>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-3">Питание</label>
+                <div class="space-y-3">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" name="foodType" value="cooking" ${foodType === "cooking" ? "checked" : ""} class="wizard-radio">
+                        <span class="ml-2">Готовлю сам <span class="text-green-600 text-xs font-medium ml-2">дешевле</span></span>
+                    </label>
+                    <label class="flex items-center cursor-pointer">
+                        <input type="radio" name="foodType" value="eatingOut" ${foodType === "eatingOut" ? "checked" : ""} class="wizard-radio">
+                        <span class="ml-2">Питаюсь вне дома <span class="text-red-500 text-xs font-medium ml-2">дороже</span></span>
+                    </label>
+                </div>
+                <p class="text-xs text-gray-500 mt-2">Пример (Мальта): готовка ≈ ${formatCurrency(cookingPrice)}/мес, кафе ≈ ${formatCurrency(eatingOutPrice)}/мес</p>
+            </div>
+            <div class="flex justify-between pt-4">
+                <button id="prev-step-3" class="text-gray-600 hover:text-gray-800 font-medium">← Назад</button>
+                <button id="next-step-3" class="bg-blue-800 text-white px-8 py-3 rounded-xl hover:bg-blue-900 transition-colors font-medium">Продолжить →</button>
+            </div>
+        </div>
+    `;
+}
+
 function renderPreferencesStep() {
   const climate = AppState.filters.climate;
   const work = AppState.filters.workAllowed;
@@ -144,7 +220,7 @@ function renderPreferencesStep() {
                 </label>
             </div>
             <div class="flex justify-between pt-4">
-                <button id="prev-step-3" class="text-gray-600 hover:text-gray-800 font-medium">← Назад</button>
+                <button id="prev-step-4" class="text-gray-600 hover:text-gray-800 font-medium">← Назад</button>
                 <button id="calculate-btn" class="bg-green-600 text-white px-8 py-3 rounded-xl hover:bg-green-700 transition-colors font-medium">Показать результаты</button>
             </div>
         </div>
@@ -173,11 +249,11 @@ function attachWizardListeners(step) {
     document.getElementById("next-step-1").addEventListener("click", () => {
       const rawValue = budgetInput.value.replace(/\s/g, "");
       const budgetValue = rawValue ? parseFloat(rawValue) : null;
-      const budgetType = document.querySelector(
-        'input[name="budgetType"]:checked',
-      ).value;
+      const selectedItems = Array.from(
+        document.querySelectorAll('input[name="budgetItem"]:checked'),
+      ).map((cb) => cb.value);
       AppState.filters.totalBudget = budgetValue;
-      AppState.filters.budgetType = budgetType;
+      AppState.filters.selectedItems = selectedItems;
       AppState.currentStep = 2;
       storage.saveState(AppState);
       renderWizardStep();
@@ -206,6 +282,25 @@ function attachWizardListeners(step) {
       storage.saveState(AppState);
       renderWizardStep();
     });
+    document.getElementById("next-step-3").addEventListener("click", () => {
+      const accommodationType = document.querySelector(
+        'input[name="accommodationType"]:checked',
+      ).value;
+      const foodType = document.querySelector(
+        'input[name="foodType"]:checked',
+      ).value;
+      AppState.filters.accommodationType = accommodationType;
+      AppState.filters.foodType = foodType;
+      AppState.currentStep = 4;
+      storage.saveState(AppState);
+      renderWizardStep();
+    });
+  } else if (step === 4) {
+    document.getElementById("prev-step-4").addEventListener("click", () => {
+      AppState.currentStep = 3;
+      storage.saveState(AppState);
+      renderWizardStep();
+    });
     document.getElementById("calculate-btn").addEventListener("click", () => {
       const climate = document.getElementById("climate-select").value || null;
       const workAllowed = document.getElementById("work-allowed").checked;
@@ -223,7 +318,7 @@ function attachWizardListeners(step) {
 
       AppState.addSavedSearch();
 
-      AppState.currentStep = 4;
+      AppState.currentStep = 5;
       storage.saveState(AppState);
       renderWizardResults();
     });
@@ -276,6 +371,13 @@ function renderResultCards(candidates) {
       const schoolImage = `https://ui-avatars.com/api/?name=${encodeURIComponent(c.schoolName)}&background=1E3A8A&color=fff&size=48`;
       const country = countries.find((ct) => ct.id === c.countryId);
 
+      const originalIndex = AppState.results.all.findIndex(
+        (item) =>
+          item.schoolId === c.schoolId &&
+          item.countryId === c.countryId &&
+          item.city === c.city,
+      );
+
       return `
             <div class="result-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden card-hover" data-searchable="${c.countryName.toLowerCase()} ${c.city.toLowerCase()} ${c.schoolName.toLowerCase()}">
                 <div class="p-5">
@@ -302,7 +404,8 @@ function renderResultCards(candidates) {
                     
                     <div class="space-y-2 text-sm mb-4">
                         <div class="flex justify-between"><span class="text-gray-500">Курс:</span><span>${formatCurrency(c.courseCost)}</span></div>
-                        <div class="flex justify-between"><span class="text-gray-500">Проживание:</span><span>${formatCurrency(c.livingCost)}</span></div>
+                        <div class="flex justify-between"><span class="text-gray-500">Проживание:</span><span>${formatCurrency(c.accommodationCost)}</span></div>
+                        <div class="flex justify-between"><span class="text-gray-500">Питание:</span><span>${formatCurrency(c.foodCost)}</span></div>
                         <div class="border-t pt-2 mt-2 flex justify-between font-medium"><span>Итого:</span><span class="text-lg">${formatCurrency(c.totalCost)}</span></div>
                     </div>
                     ${
@@ -316,7 +419,7 @@ function renderResultCards(candidates) {
                         : ""
                     }
                     <div class="flex gap-2">
-                        <button class="school-link flex-1 text-center text-blue-800 hover:text-blue-900 text-sm font-medium py-2 border border-blue-800 rounded-lg hover:bg-blue-50 transition" data-school-id="${c.schoolId}">О школе →</button>
+                        <button class="detail-link flex-1 text-center text-blue-800 hover:text-blue-900 text-sm font-medium py-2 border border-blue-800 rounded-lg hover:bg-blue-50 transition" data-index="${originalIndex}">Детализация →</button>
                         <button class="country-link flex-1 text-center text-gray-600 hover:text-gray-800 text-sm font-medium py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition" data-country-id="${c.countryId}">Страна →</button>
                     </div>
                 </div>
@@ -327,9 +430,9 @@ function renderResultCards(candidates) {
 }
 
 function attachCardButtons() {
-  document.querySelectorAll(".school-link").forEach((btn) => {
-    btn.removeEventListener("click", handleSchoolClick);
-    btn.addEventListener("click", handleSchoolClick);
+  document.querySelectorAll(".detail-link").forEach((btn) => {
+    btn.removeEventListener("click", handleDetailClick);
+    btn.addEventListener("click", handleDetailClick);
   });
   document.querySelectorAll(".country-link").forEach((btn) => {
     btn.removeEventListener("click", handleCountryClick);
@@ -337,9 +440,9 @@ function attachCardButtons() {
   });
 }
 
-function handleSchoolClick(e) {
-  const schoolId = e.currentTarget.dataset.schoolId;
-  navigateTo(`/school/${schoolId}`);
+function handleDetailClick(e) {
+  const index = e.currentTarget.dataset.index;
+  navigateTo(`/result/${index}`);
 }
 
 function handleCountryClick(e) {

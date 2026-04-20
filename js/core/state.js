@@ -1,11 +1,14 @@
+// js/core/state.js
 import { storage } from "./storage.js";
 
 export const AppState = {
   currentStep: 1,
   filters: {
     totalBudget: null,
-    budgetType: "total",
+    selectedItems: ["course", "accommodation", "food"], // по умолчанию выбраны курс, проживание, питание
     duration: { value: null, unit: "months" },
+    accommodationType: "shared",
+    foodType: "cooking",
     climate: null,
     workAllowed: null,
     skippedSteps: [],
@@ -15,7 +18,7 @@ export const AppState = {
     topRecommended: [],
   },
   activeSortTab: "price-quality",
-  savedSearches: [], 
+  savedSearches: [],
 
   init() {
     const saved = storage.loadState();
@@ -32,8 +35,10 @@ export const AppState = {
     this.currentStep = 1;
     this.filters = {
       totalBudget: null,
-      budgetType: "total",
+      selectedItems: ["course", "accommodation", "food"],
       duration: { value: null, unit: "months" },
+      accommodationType: "shared",
+      foodType: "cooking",
       climate: null,
       workAllowed: null,
       skippedSteps: [],
@@ -58,10 +63,7 @@ export const AppState = {
       id: Date.now(),
       date: new Date().toLocaleString("ru-RU"),
       filters: { ...this.filters },
-      results: {
-        all: this.results.all,
-        topRecommended: this.results.topRecommended,
-      },
+      results: { ...this.results },
       activeSortTab: this.activeSortTab,
     };
     this.savedSearches.unshift(search);

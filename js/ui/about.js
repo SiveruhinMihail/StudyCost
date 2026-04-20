@@ -57,7 +57,7 @@ export function renderAboutPage() {
             <div class="bg-white rounded-2xl p-8 shadow-sm text-center">
                 <h3 class="text-xl font-semibold mb-4">🔍 Откуда данные?</h3>
                 <p class="text-gray-600 max-w-2xl mx-auto">Мы собираем информацию из открытых источников: официальных сайтов языковых школ, государственных порталов и агрегаторов. Данные обновляются ежемесячно.</p>
-                <p class="mt-4 text-sm text-gray-500">Версия 1.0 · 2025</p>
+                <p class="mt-4 text-sm text-gray-500">Версия 1.0 · 2026</p>
             </div>
         </div>
     `;

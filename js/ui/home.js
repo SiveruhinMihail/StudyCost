@@ -36,10 +36,13 @@ export function renderHomePage() {
 }
 
 function renderCountryCard(country) {
-  const imageUrl = `https://source.unsplash.com/featured/400x300/?${country.name.toLowerCase()},city,landmark`;
+  const imageUrl = `assets/images/countries/${country.code}.jpg`;
 
   const countryCourses = courses.filter((c) => c.countryId === country.id);
   const living = livingCosts.find((l) => l.countryId === country.id);
+  const livingCostDisplay = living
+    ? formatCurrency(living.accommodation.sharedRoom * country.exchangeRate)
+    : "—";
 
   let minCost = null;
   countryCourses.forEach((course) => {
@@ -47,17 +50,32 @@ function renderCountryCard(country) {
     if (course.pricePerMonthUSD) costPerMonth = course.pricePerMonthUSD * 96.5;
     else if (course.pricePerMonthEUR)
       costPerMonth = course.pricePerMonthEUR * 105;
+    else if (course.pricePerMonthCAD)
+      costPerMonth = course.pricePerMonthCAD * 70.5;
+    else if (course.pricePerMonthGBP)
+      costPerMonth = course.pricePerMonthGBP * 120;
+    else if (course.pricePerMonthAUD)
+      costPerMonth = course.pricePerMonthAUD * 62;
+    else if (course.pricePerMonthNZD)
+      costPerMonth = course.pricePerMonthNZD * 56;
     else if (course.pricePerWeekUSD)
       costPerMonth = course.pricePerWeekUSD * 4 * 96.5;
     else if (course.pricePerWeekEUR)
       costPerMonth = course.pricePerWeekEUR * 4 * 105;
+    else if (course.pricePerWeekCAD)
+      costPerMonth = course.pricePerWeekCAD * 4 * 70.5;
+    else if (course.pricePerWeekGBP)
+      costPerMonth = course.pricePerWeekGBP * 4 * 120;
+    else if (course.pricePerWeekAUD)
+      costPerMonth = course.pricePerWeekAUD * 4 * 62;
+    else if (course.pricePerWeekNZD)
+      costPerMonth = course.pricePerWeekNZD * 4 * 56;
+
     if (costPerMonth > 0 && (minCost === null || costPerMonth < minCost))
       minCost = costPerMonth;
   });
+  const priceDisplay = minCost ? `от ${formatCurrency(minCost)} / мес` : "—";
 
-  const priceDisplay = minCost
-    ? `от ${formatCurrency(minCost)} / мес`
-    : "Цена по запросу";
   const searchData = `${country.name.toLowerCase()} ${country.capital.toLowerCase()} ${country.id}`;
 
   return `

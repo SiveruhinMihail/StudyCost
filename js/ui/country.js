@@ -4,6 +4,7 @@ import { courses } from "../data/courses.js";
 import { livingCosts } from "../data/livingCosts.js";
 import { formatCurrency } from "./helpers.js";
 import { navigateTo } from "../app.js";
+import { visaCosts } from "../data/visaCosts.js";
 
 const root = document.getElementById("app-root");
 
@@ -16,7 +17,18 @@ export function renderCountryPage(countryId) {
 
   const countryCourses = courses.filter((c) => c.countryId === countryId);
   const living = livingCosts.find((l) => l.countryId === countryId);
-  const imageUrl = `https://source.unsplash.com/featured/1200x400/?${country.name.toLowerCase()},${country.capital.toLowerCase()},landmark`;
+  const imageUrl = `assets/images/countries/${country.code}.jpg`;
+  const visa = visaCosts.find((v) => v.countryId === countryId);
+  let visaInfo = "Нет данных";
+  if (visa) {
+    if (visa.priceEUR) visaInfo = formatCurrency(visa.priceEUR * 105);
+    else if (visa.priceUSD) visaInfo = formatCurrency(visa.priceUSD * 96.5);
+    else if (visa.priceGBP) visaInfo = formatCurrency(visa.priceGBP * 120);
+    else if (visa.priceAUD) visaInfo = formatCurrency(visa.priceAUD * 62);
+    else if (visa.priceNZD) visaInfo = formatCurrency(visa.priceNZD * 56);
+    else if (visa.priceCAD) visaInfo = formatCurrency(visa.priceCAD * 70.5);
+    else if (visa.priceAED) visaInfo = formatCurrency(visa.priceAED * 26);
+  }
 
   let html = `
         <div class="max-w-5xl mx-auto">
@@ -45,6 +57,7 @@ export function renderCountryPage(countryId) {
                         <div class="flex"><dt class="w-1/3 text-gray-500">Валюта:</dt><dd>${country.currency}</dd></div>
                         <div class="flex"><dt class="w-1/3 text-gray-500">Климат:</dt><dd>${getClimateLabel(country.climate)}</dd></div>
                         <div class="flex"><dt class="w-1/3 text-gray-500">Подработка:</dt><dd>${country.workAllowed ? "Разрешена" : "Нет"}</dd></div>
+                        <div class="flex"><dt class="w-1/3 text-gray-500">Виза:</dt><dd>${visaInfo}</dd></div>
                     </dl>
                 </div>
                 <div class="bg-white rounded-2xl p-6 shadow-sm">
@@ -112,13 +125,30 @@ function getClimateLabel(climate) {
 }
 
 function getPriceDisplay(course, country) {
-  if (course.pricePerWeekUSD)
-    return `${formatCurrency(course.pricePerWeekUSD * 4 * 96.5)} / мес`;
-  if (course.pricePerWeekEUR)
-    return `${formatCurrency(course.pricePerWeekEUR * 4 * 105)} / мес`;
-  if (course.pricePerMonthUSD)
-    return `${formatCurrency(course.pricePerMonthUSD * 96.5)} / мес`;
-  if (course.pricePerMonthEUR)
-    return `${formatCurrency(course.pricePerMonthEUR * 105)} / мес`;
-  return "По запросу";
+  let pricePerMonth = 0;
+  if (course.pricePerWeekUSD) pricePerMonth = course.pricePerWeekUSD * 4 * 96.5;
+  else if (course.pricePerWeekEUR)
+    pricePerMonth = course.pricePerWeekEUR * 4 * 105;
+  else if (course.pricePerMonthUSD)
+    pricePerMonth = course.pricePerMonthUSD * 96.5;
+  else if (course.pricePerMonthEUR)
+    pricePerMonth = course.pricePerMonthEUR * 105;
+  else if (course.pricePerWeekCAD)
+    pricePerMonth = course.pricePerWeekCAD * 4 * 70.5;
+  else if (course.pricePerMonthCAD)
+    pricePerMonth = course.pricePerMonthCAD * 70.5;
+  else if (course.pricePerWeekGBP)
+    pricePerMonth = course.pricePerWeekGBP * 4 * 120;
+  else if (course.pricePerMonthGBP)
+    pricePerMonth = course.pricePerMonthGBP * 120;
+  else if (course.pricePerWeekAUD)
+    pricePerMonth = course.pricePerWeekAUD * 4 * 62;
+  else if (course.pricePerMonthAUD)
+    pricePerMonth = course.pricePerMonthAUD * 62;
+  else if (course.pricePerWeekNZD)
+    pricePerMonth = course.pricePerWeekNZD * 4 * 56;
+  else if (course.pricePerMonthNZD)
+    pricePerMonth = course.pricePerMonthNZD * 56;
+
+  return pricePerMonth > 0 ? `${formatCurrency(pricePerMonth)} / мес` : "—";
 }

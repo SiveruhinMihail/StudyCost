@@ -1,4 +1,3 @@
-// js/ui/saved.js
 import { AppState } from "../core/state.js";
 import { formatCurrency } from "./helpers.js";
 import { navigateTo } from "../app.js";
@@ -51,7 +50,7 @@ export function renderSavedPage() {
         AppState.filters = { ...search.filters };
         AppState.results = { ...search.results };
         AppState.activeSortTab = search.activeSortTab;
-        AppState.currentStep = 4;
+        AppState.currentStep = 5;
         AppState.save();
         navigateTo("/wizard");
       }
@@ -63,16 +62,59 @@ function renderSavedSearch(search) {
   const filters = search.filters;
   const topResults = search.results.topRecommended.slice(0, 3);
 
+  const itemLabels = {
+    course: "Курс",
+    accommodation: "Проживание",
+    food: "Питание",
+    transport: "Транспорт",
+    visa: "Виза",
+    flight: "Перелёт",
+  };
+
+  const selectedItemsList =
+    filters.selectedItems && filters.selectedItems.length
+      ? filters.selectedItems.map((item) => itemLabels[item] || item).join(", ")
+      : "Курс, проживание, питание";
+
+  const budgetValue = filters.totalBudget
+    ? formatCurrency(filters.totalBudget)
+    : "—";
+  const durationValue = filters.duration.value
+    ? `${filters.duration.value} ${getDurationLabel(filters.duration.unit)}`
+    : "—";
+
   return `
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
             <div class="flex justify-between items-start mb-4">
                 <div>
-                    <div class="text-sm text-gray-500 mb-1">${search.date}</div>
-                    <div class="flex flex-wrap gap-2 text-sm">
-                        ${filters.totalBudget ? `<span class="bg-gray-100 px-3 py-1 rounded-full">💰 ${formatCurrency(filters.totalBudget)}</span>` : ""}
-                        ${filters.duration.value ? `<span class="bg-gray-100 px-3 py-1 rounded-full">📅 ${filters.duration.value} ${getDurationLabel(filters.duration.unit)}</span>` : ""}
-                        ${filters.climate ? `<span class="bg-gray-100 px-3 py-1 rounded-full">🌡️ ${getClimateLabel(filters.climate)}</span>` : ""}
-                        ${filters.workAllowed ? `<span class="bg-gray-100 px-3 py-1 rounded-full">💼 С подработкой</span>` : ""}
+                    <div class="text-sm text-gray-500 mb-2">${search.date}</div>
+                    <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-500">💰 Бюджет:</span>
+                            <span class="font-medium">${budgetValue}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-500">📅 Срок:</span>
+                            <span class="font-medium">${durationValue}</span>
+                        </div>
+                        <div class="flex items-center gap-2 col-span-2">
+                            <span class="text-gray-500">📦 В расчёте:</span>
+                            <span class="font-medium">${selectedItemsList}</span>
+                        </div>
+                        ${
+                          filters.climate
+                            ? `
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-500">🌡️ Климат:</span>
+                            <span class="font-medium">${getClimateLabel(filters.climate)}</span>
+                        </div>
+                        `
+                            : ""
+                        }
+                        <div class="flex items-center gap-2">
+                            <span class="text-gray-500">💼 Подработка:</span>
+                            <span class="font-medium">${filters.workAllowed ? "Важна" : "Не важна"}</span>
+                        </div>
                     </div>
                 </div>
                 <div class="flex gap-2">
@@ -95,7 +137,7 @@ function renderMiniSchoolCard(school) {
   return `
         <div class="border rounded-xl p-3">
             <div class="flex items-center gap-2 mb-2">
-                <span class="fi fi-${country?.code || "unknown"}"></span>
+                <span class="text-xl">${country?.flag || "🌍"}</span>
                 <span class="font-medium truncate">${school.schoolName}</span>
             </div>
             <div class="text-sm text-gray-600">${school.countryName}, ${school.city}</div>

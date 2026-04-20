@@ -1,4 +1,3 @@
-// js/app.js
 import { AppState } from "./core/state.js";
 import { renderHomePage } from "./ui/home.js";
 import { renderWizardPage } from "./ui/wizard.js";
@@ -6,6 +5,7 @@ import { renderCountryPage } from "./ui/country.js";
 import { renderSchoolPage } from "./ui/school.js";
 import { renderSavedPage } from "./ui/saved.js";
 import { renderAboutPage } from "./ui/about.js";
+import { renderResultDetailPage } from "./ui/resultDetail.js";
 import { storage } from "./core/storage.js";
 
 const root = document.getElementById("app-root");
@@ -13,14 +13,6 @@ const root = document.getElementById("app-root");
 function getHashPath() {
   const hash = window.location.hash.slice(1);
   return hash || "/";
-}
-
-function normalizePath(path) {
-  return path;
-}
-
-function fullPath(route) {
-  return "#" + route;
 }
 
 let currentPath = getHashPath();
@@ -47,10 +39,9 @@ window.addEventListener("hashchange", () => {
 });
 
 export function navigateTo(path) {
-  const normalized = normalizePath(path);
-  const targetFullPath = fullPath(normalized);
+  const targetFullPath = "#" + path;
   if (targetFullPath === "#" + currentPath) return;
-  window.location.hash = normalized;
+  window.location.hash = path;
 }
 
 function handleLocation() {
@@ -67,15 +58,23 @@ function renderPage(path) {
     if (path === "/" || path === "") {
       renderHomePage();
     } else if (path === "/wizard") {
-      if (AppState.currentStep === 4 && AppState.results.all.length > 0) {
+      // Если уже есть результаты (шаг 5), просто показываем их
+      if (AppState.currentStep === 5 && AppState.results.all.length > 0) {
+        renderWizardPage();
+      } else if (
+        AppState.currentStep === 4 &&
+        AppState.results.all.length > 0
+      ) {
+        // legacy
         renderWizardPage();
       } else {
+        // Иначе загружаем последнюю сохранённую подборку
         if (AppState.savedSearches && AppState.savedSearches.length > 0) {
           const lastSearch = AppState.savedSearches[0];
           AppState.filters = { ...lastSearch.filters };
           AppState.results = { ...lastSearch.results };
           AppState.activeSortTab = lastSearch.activeSortTab;
-          AppState.currentStep = 4;
+          AppState.currentStep = 5;
           AppState.save();
           renderWizardPage();
         } else {
@@ -91,6 +90,9 @@ function renderPage(path) {
     } else if (path.startsWith("/school/")) {
       const schoolId = path.split("/")[2];
       renderSchoolPage(schoolId);
+    } else if (path.startsWith("/result/")) {
+      const index = parseInt(path.split("/")[2], 10);
+      renderResultDetailPage(index);
     } else if (path === "/saved") {
       renderSavedPage();
     } else if (path === "/about") {

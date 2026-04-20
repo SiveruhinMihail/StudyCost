@@ -1,3 +1,4 @@
+// js/core/calculator.js
 import { countries } from "../data/countries.js";
 import { courses } from "../data/courses.js";
 import { livingCosts } from "../data/livingCosts.js";
@@ -81,8 +82,14 @@ function getCourseCost(course, durationValue, durationUnit) {
   return cost > 0 ? convertToRUB(cost, currency) : 0;
 }
 
-function getLivingCost(living, durationValue, durationUnit) {
-  if (!living) return 0;
+function getLivingCostDetails(
+  living,
+  durationValue,
+  durationUnit,
+  accommodationType = "shared",
+  foodType = "cooking",
+) {
+  if (!living) return { accommodation: 0, food: 0, transport: 0, total: 0 };
   let months;
   switch (durationUnit) {
     case "weeks":
@@ -100,12 +107,23 @@ function getLivingCost(living, durationValue, durationUnit) {
     default:
       months = durationValue;
   }
-  const avgAccommodation =
-    (living.accommodation.sharedRoom + living.accommodation.privateRoom) / 2;
-  const avgFood = (living.food.cooking + living.food.eatingOut) / 2;
-  const totalLocal =
-    (avgAccommodation + avgFood + (living.transport || 0)) * months;
-  return convertToRUB(totalLocal, living.currency);
+
+  const accommodationCost =
+    (accommodationType === "shared"
+      ? living.accommodation.sharedRoom
+      : living.accommodation.privateRoom) * months;
+  const foodCost =
+    (foodType === "cooking" ? living.food.cooking : living.food.eatingOut) *
+    months;
+  const transportCost = (living.transport || 0) * months;
+  const totalLocal = accommodationCost + foodCost + transportCost;
+
+  return {
+    accommodation: convertToRUB(accommodationCost, living.currency),
+    food: convertToRUB(foodCost, living.currency),
+    transport: convertToRUB(transportCost, living.currency),
+    total: convertToRUB(totalLocal, living.currency),
+  };
 }
 
 function getVisaCostRub(countryId) {
@@ -139,7 +157,15 @@ function getVisaCostRub(countryId) {
 }
 
 export function calculateCandidates(filters) {
-  const { totalBudget, budgetType, duration, climate, workAllowed } = filters;
+  const {
+    totalBudget,
+    selectedItems,
+    duration,
+    climate,
+    workAllowed,
+    accommodationType = "shared",
+    foodType = "cooking",
+  } = filters;
   if (!duration || !duration.value) return [];
 
   let candidates = buildCandidates(filters, true);
@@ -162,7 +188,15 @@ export function calculateCandidates(filters) {
 }
 
 function buildCandidates(filters, applyBudgetLimit = true) {
-  const { totalBudget, budgetType, duration, climate, workAllowed } = filters;
+  const {
+    totalBudget,
+    selectedItems,
+    duration,
+    climate,
+    workAllowed,
+    accommodationType = "shared",
+    foodType = "cooking",
+  } = filters;
   const candidates = [];
 
   for (const course of courses) {
@@ -177,17 +211,25 @@ function buildCandidates(filters, applyBudgetLimit = true) {
     if (workAllowed !== null && country.workAllowed !== workAllowed) continue;
 
     const courseCostRub = getCourseCost(course, duration.value, duration.unit);
-    const livingCostRub = getLivingCost(living, duration.value, duration.unit);
+    const livingCostDetails = getLivingCostDetails(
+      living,
+      duration.value,
+      duration.unit,
+      accommodationType,
+      foodType,
+    );
     const visaCostRub = getVisaCostRub(course.countryId);
     const flightEstimateRub = 50000;
 
-    let totalCostRub;
-    if (budgetType === "course") totalCostRub = courseCostRub;
-    else if (budgetType === "course+living")
-      totalCostRub = courseCostRub + livingCostRub;
-    else
-      totalCostRub =
-        courseCostRub + livingCostRub + visaCostRub + flightEstimateRub;
+    let totalCostRub = 0;
+    if (selectedItems.includes("course")) totalCostRub += courseCostRub;
+    if (selectedItems.includes("accommodation"))
+      totalCostRub += livingCostDetails.accommodation;
+    if (selectedItems.includes("food")) totalCostRub += livingCostDetails.food;
+    if (selectedItems.includes("transport"))
+      totalCostRub += livingCostDetails.transport;
+    if (selectedItems.includes("visa")) totalCostRub += visaCostRub;
+    if (selectedItems.includes("flight")) totalCostRub += flightEstimateRub;
 
     if (totalCostRub === 0) continue;
 
@@ -203,11 +245,15 @@ function buildCandidates(filters, applyBudgetLimit = true) {
       schoolName: course.schoolName,
       schoolRating: course.schoolRating || 4.0,
       courseCost: Math.round(courseCostRub),
-      livingCost: Math.round(livingCostRub),
+      accommodationCost: Math.round(livingCostDetails.accommodation),
+      foodCost: Math.round(livingCostDetails.food),
+      transportCost: Math.round(livingCostDetails.transport),
       visaCost: Math.round(visaCostRub),
+      flightCost: flightEstimateRub,
       totalCost: Math.round(totalCostRub),
       budgetDiff: budgetDiff !== null ? Math.round(budgetDiff) : null,
       workAllowed: country.workAllowed,
+      selectedItems: [...selectedItems],
     });
   }
   return candidates;

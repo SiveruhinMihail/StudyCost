@@ -26,10 +26,10 @@ export const livingCosts = [
   {
     countryId: "philippines",
     city: "Себу",
-    accommodation: { sharedRoom: 150, privateRoom: 350 },
-    food: { cooking: 60, eatingOut: 200 },
-    transport: 30,
-    currency: "USD",
+    accommodation: { sharedRoom: 9000, privateRoom: 15000 },
+    food: { cooking: 6000, eatingOut: 10000 },
+    transport: 1500,
+    currency: "PHP",
   },
   {
     countryId: "uae",
